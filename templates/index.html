@@ -1,0 +1,24 @@
+<!DOCTYPE html>  
+<html>  
+<head>  
+    <meta charset="utf-8">  
+    <title>Graph Visualization</title>  
+</head>  
+<body>  
+    <h1>Wizualizacja grafu RDF</h1>  
+    <iframe src="{{ url_for('static', filename='graph.html') }}" style="width: 100%; height: 800px; border: none;"></iframe>  
+    <h2>Analiza</h2>  
+    <button onclick="loadAnalysis()">Pokaż analizę JSON</button>  
+    <pre id="analysis"></pre>  
+  
+    <script>  
+    function loadAnalysis() {  
+        fetch('/analysis')  
+        .then(r => r.json())  
+        .then(data => {  
+            document.getElementById('analysis').textContent = JSON.stringify(data, null, 2);  
+        });  
+    }  
+    </script>  
+</body>  
+</html>  

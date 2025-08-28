@@ -1,0 +1,99 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .  
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .  
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .  
+@prefix dct: <http://purl.org/dc/terms/> .  
+@prefix fibo-fbc-fct-fse: <https://spec.edmcouncil.org/fibo/ontology/FBC/FunctionalEntities/FinancialServicesEntities/> .  
+@prefix fibo-be-le-lei: <https://spec.edmcouncil.org/fibo/ontology/BE/LegalEntities/LegalEntities/> .  
+@prefix fibo-fnd-org-org: <https://spec.edmcouncil.org/fibo/ontology/FND/Organizations/Organizations/> .  
+@prefix fibo-sec-sec-lst: <https://spec.edmcouncil.org/fibo/ontology/SEC/SecuritiesListings/SecuritiesListings/> .  
+@prefix fibo-sec-eq-eq: <https://spec.edmcouncil.org/fibo/ontology/SEC/Equities/Equities/> .  
+@prefix ex: <http://example.com/ontology/> .  
+  
+# --- Classes ---  
+ex:Application rdf:type rdfs:Class .  
+ex:Library rdf:type rdfs:Class .  
+ex:InfrastructureHardware rdf:type rdfs:Class .  
+ex:Vulnerability rdf:type rdfs:Class .  
+ex:BusinessCapability rdf:type rdfs:Class .  
+  
+# --- Properties ---  
+ex:hasBusinessCapability rdf:type rdf:Property .  
+ex:dependsOn rdf:type rdf:Property .  
+ex:runsOn rdf:type rdf:Property .  
+ex:hasVulnerability rdf:type rdf:Property .  
+ex:hasCPE rdf:type rdf:Property .  
+ex:cveId rdf:type rdf:Property .  
+ex:cpe23Uri rdf:type rdf:Property .  
+ex:cvssScore rdf:type rdf:Property .  
+ex:cvssSeverity rdf:type rdf:Property .  
+ex:publishedDate rdf:type rdf:Property .  
+ex:lastModifiedDate rdf:type rdf:Property .  
+  
+# --- Infrastructure ---  
+ex:HPBladeServer rdf:type ex:InfrastructureHardware ;  
+    rdfs:label "HP BladeSystem c7000" ;  
+    ex:hasCPE "cpe:2.3:o:hpe:bladesystem_c7000_firmware" .  
+  
+ex:CloudAWS rdf:type ex:InfrastructureHardware ;  
+    rdfs:label "Amazon Web Services EC2" ;  
+    ex:hasCPE "cpe:2.3:o:amazon:amazon_linux:2" .  
+  
+# --- Libraries ---  
+ex:MarketDataAPI rdf:type ex:Library ;  
+    dct:title "Market Data API SDK" ;  
+    ex:hasCPE "cpe:2.3:a:apache:log4j:2.14.1" .  
+  
+# --- Applications ---  
+ex:EquityTradePlatform rdf:type ex:Application ;  
+    dct:title "Equity Trade Platform" ;  
+    ex:dependsOn ex:MarketDataAPI ;  
+    ex:runsOn ex:CloudAWS .  
+  
+ex:RiskEngine rdf:type ex:Application ;  
+    dct:title "Risk Engine" ;  
+    ex:dependsOn ex:MarketDataAPI ;  
+    ex:runsOn ex:HPBladeServer .  
+  
+# --- Vulnerabilities from NVD ---  
+ex:CVE-2021-44228 rdf:type ex:Vulnerability ;  
+    ex:cveId "CVE-2021-44228" ;  
+    ex:cpe23Uri "cpe:2.3:a:apache:log4j:2.14.1" ;  
+    ex:cvssScore "10.0" ;  
+    ex:cvssSeverity "Critical" ;  
+    ex:publishedDate "2021-12-10T00:00:00Z" ;  
+    ex:lastModifiedDate "2022-01-01T00:00:00Z" ;  
+    dct:description "Apache Log4j2 JNDI remote code execution vulnerability (Log4Shell)." .  
+  
+ex:CVE-2023-38963 rdf:type ex:Vulnerability ;  
+    ex:cveId "CVE-2023-38963" ;  
+    ex:cpe23Uri "cpe:2.3:o:amazon:amazon_linux:2" ;  
+    ex:cvssScore "7.8" ;  
+    ex:cvssSeverity "High" ;  
+    ex:publishedDate "2023-08-15T00:00:00Z" ;  
+    ex:lastModifiedDate "2023-09-01T00:00:00Z" ;  
+    dct:description "Amazon Linux 2 kernel vulnerability allowing privilege escalation." .  
+  
+ex:CVE-2022-23943 rdf:type ex:Vulnerability ;  
+    ex:cveId "CVE-2022-23943" ;  
+    ex:cpe23Uri "cpe:2.3:o:hpe:bladesystem_c7000_firmware" ;  
+    ex:cvssScore "8.2" ;  
+    ex:cvssSeverity "High" ;  
+    ex:publishedDate "2022-02-10T00:00:00Z" ;  
+    ex:lastModifiedDate "2022-05-01T00:00:00Z" ;  
+    dct:description "HPE BladeSystem firmware buffer overflow vulnerability." .  
+  
+# --- Linking vulnerabilities to assets via CPE matching ---  
+ex:MarketDataAPI ex:hasVulnerability ex:CVE-2021-44228 .  
+ex:CloudAWS ex:hasVulnerability ex:CVE-2023-38963 .  
+ex:HPBladeServer ex:hasVulnerability ex:CVE-2022-23943 .  
+  
+# --- Institutions ---  
+ex:JPMorganChase rdf:type fibo-fbc-fct-fse:InvestmentBank , fibo-be-le-lei:LegalEntity ;  
+    foaf:name "J.P. Morgan Chase & Co." ;  
+    ex:hasBusinessCapability ex:EquityTrading , ex:RiskManagement ;  
+    fibo-fnd-org-org:hasMember ex:EquityTradePlatform , ex:RiskEngine .  
+  
+ex:BlackRock rdf:type fibo-fbc-fct-fse:InvestmentCompany , fibo-be-le-lei:LegalEntity ;  
+    foaf:name "BlackRock, Inc." ;  
+    ex:hasBusinessCapability ex:EquityTrading ;  
+    fibo-fnd-org-org:hasMember ex:EquityTradePlatform .  
