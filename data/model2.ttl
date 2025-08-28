@@ -1,0 +1,237 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .  
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .  
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .  
+@prefix dct: <http://purl.org/dc/terms/> .  
+@prefix fibo-fbc-fct-fse: <https://spec.edmcouncil.org/fibo/ontology/FBC/FunctionalEntities/FinancialServicesEntities/> .  
+@prefix fibo-be-le-lei: <https://spec.edmcouncil.org/fibo/ontology/BE/LegalEntities/LegalEntities/> .  
+@prefix fibo-fnd-org-org: <https://spec.edmcouncil.org/fibo/ontology/FND/Organizations/Organizations/> .  
+@prefix fibo-sec-sec-lst: <https://spec.edmcouncil.org/fibo/ontology/SEC/SecuritiesListings/SecuritiesListings/> .  
+@prefix fibo-sec-eq-eq: <https://spec.edmcouncil.org/fibo/ontology/SEC/Equities/Equities/> .  
+@prefix ex: <http://example.com/ontology/> .  
+  
+# --- Classes ---  
+ex:Application rdf:type rdfs:Class .  
+ex:Library rdf:type rdfs:Class .  
+ex:InfrastructureHardware rdf:type rdfs:Class .  
+ex:Vulnerability rdf:type rdfs:Class .  
+ex:BusinessCapability rdf:type rdfs:Class .  
+  
+# --- Properties ---  
+ex:hasBusinessCapability rdf:type rdf:Property .  
+ex:dependsOn rdf:type rdf:Property .  
+ex:runsOn rdf:type rdf:Property .  
+ex:hasVulnerability rdf:type rdf:Property .  
+ex:hasCPE rdf:type rdf:Property .  
+ex:cveId rdf:type rdf:Property .  
+ex:cpe23Uri rdf:type rdf:Property .  
+ex:cvssScore rdf:type rdf:Property .  
+ex:cvssSeverity rdf:type rdf:Property .  
+ex:publishedDate rdf:type rdf:Property .  
+ex:lastModifiedDate rdf:type rdf:Property .  
+  
+# --- Infrastructure ---  
+ex:HPBladeServer rdf:type ex:InfrastructureHardware ;  
+    rdfs:label "HP BladeSystem c7000" ;  
+    ex:hasCPE "cpe:2.3:o:hpe:bladesystem_c7000_firmware" .  
+  
+ex:CloudAWS rdf:type ex:InfrastructureHardware ;  
+    rdfs:label "Amazon Web Services EC2" ;  
+    ex:hasCPE "cpe:2.3:o:amazon:amazon_linux:2" .  
+  
+ex:CiscoSwitch rdf:type ex:InfrastructureHardware ;  
+    rdfs:label "Cisco Nexus 9000 Switch" ;  
+    ex:hasCPE "cpe:2.3:o:cisco:nexus_9000_firmware" .  
+  
+ex:AzureCloud rdf:type ex:InfrastructureHardware ;  
+    rdfs:label "Microsoft Azure VM" ;  
+    ex:hasCPE "cpe:2.3:o:microsoft:windows_server_2019" .  
+  
+# --- Libraries ---  
+ex:MarketDataAPI rdf:type ex:Library ;  
+    dct:title "Market Data API SDK" ;  
+    ex:hasCPE "cpe:2.3:a:apache:log4j:2.14.1" .  
+  
+ex:PaymentGatewaySDK rdf:type ex:Library ;  
+    dct:title "Payment Gateway SDK" ;  
+    ex:hasCPE "cpe:2.3:a:openssl:openssl:1.1.1k" .  
+  
+# --- Applications ---  
+ex:EquityTradePlatform rdf:type ex:Application ;  
+    dct:title "Equity Trade Platform" ;  
+    ex:dependsOn ex:MarketDataAPI ;  
+    ex:runsOn ex:CloudAWS .  
+  
+ex:RiskEngine rdf:type ex:Application ;  
+    dct:title "Risk Engine" ;  
+    ex:dependsOn ex:MarketDataAPI ;  
+    ex:runsOn ex:HPBladeServer .  
+  
+ex:PaymentProcessingSystem rdf:type ex:Application ;  
+    dct:title "Payment Processing System" ;  
+    ex:dependsOn ex:PaymentGatewaySDK ;  
+    ex:runsOn ex:CiscoSwitch .  
+  
+ex:PortfolioManagementApp rdf:type ex:Application ;  
+    dct:title "Portfolio Management Application" ;  
+    ex:dependsOn ex:MarketDataAPI ;  
+    ex:runsOn ex:AzureCloud .  
+  
+# --- Vulnerabilities from NVD ---  
+ex:CVE-2021-44228 rdf:type ex:Vulnerability ;  
+    ex:cveId "CVE-2021-44228" ;  
+    ex:cpe23Uri "cpe:2.3:a:apache:log4j:2.14.1" ;  
+    ex:cvssScore "10.0" ;  
+    ex:cvssSeverity "Critical" ;  
+    ex:publishedDate "2021-12-10T00:00:00Z" ;  
+    ex:lastModifiedDate "2022-01-01T00:00:00Z" ;  
+    dct:description "Apache Log4j2 JNDI remote code execution vulnerability (Log4Shell)." .  
+  
+ex:CVE-2023-38963 rdf:type ex:Vulnerability ;  
+    ex:cveId "CVE-2023-38963" ;  
+    ex:cpe23Uri "cpe:2.3:o:amazon:amazon_linux:2" ;  
+    ex:cvssScore "7.8" ;  
+    ex:cvssSeverity "High" ;  
+    ex:publishedDate "2023-08-15T00:00:00Z" ;  
+    ex:lastModifiedDate "2023-09-01T00:00:00Z" ;  
+    dct:description "Amazon Linux 2 kernel vulnerability allowing privilege escalation." .  
+  
+ex:CVE-2022-23943 rdf:type ex:Vulnerability ;  
+    ex:cveId "CVE-2022-23943" ;  
+    ex:cpe23Uri "cpe:2.3:o:hpe:bladesystem_c7000_firmware" ;  
+    ex:cvssScore "8.2" ;  
+    ex:cvssSeverity "High" ;  
+    ex:publishedDate "2022-02-10T00:00:00Z" ;  
+    ex:lastModifiedDate "2022-05-01T00:00:00Z" ;  
+    dct:description "HPE BladeSystem firmware buffer overflow vulnerability." .  
+  
+ex:CVE-2022-0778 rdf:type ex:Vulnerability ;  
+    ex:cveId "CVE-2022-0778" ;  
+    ex:cpe23Uri "cpe:2.3:a:openssl:openssl:1.1.1k" ;  
+    ex:cvssScore "7.5" ;  
+    ex:cvssSeverity "High" ;  
+    ex:publishedDate "2022-03-15T00:00:00Z" ;  
+    ex:lastModifiedDate "2022-04-01T00:00:00Z" ;  
+    dct:description "OpenSSL infinite loop vulnerability." .  
+  
+ex:CVE-2023-20065 rdf:type ex:Vulnerability ;  
+    ex:cveId "CVE-2023-20065" ;  
+    ex:cpe23Uri "cpe:2.3:o:cisco:nexus_9000_firmware" ;  
+    ex:cvssScore "9.1" ;  
+    ex:cvssSeverity "Critical" ;  
+    ex:publishedDate "2023-05-10T00:00:00Z" ;  
+    ex:lastModifiedDate "2023-06-01T00:00:00Z" ;  
+    dct:description "Cisco Nexus 9000 firmware privilege escalation vulnerability." .  
+  
+ex:CVE-2022-26809 rdf:type ex:Vulnerability ;  
+    ex:cveId "CVE-2022-26809" ;  
+    ex:cpe23Uri "cpe:2.3:o:microsoft:windows_server_2019" ;  
+    ex:cvssScore "9.8" ;  
+    ex:cvssSeverity "Critical" ;  
+    ex:publishedDate "2022-04-12T00:00:00Z" ;  
+    ex:lastModifiedDate "2022-05-15T00:00:00Z" ;  
+    dct:description "Microsoft Windows Server 2019 remote procedure call runtime remote code execution vulnerability." .  
+  
+# --- Linking vulnerabilities to assets via CPE matching ---  
+ex:MarketDataAPI ex:hasVulnerability ex:CVE-2021-44228 .  
+ex:CloudAWS ex:hasVulnerability ex:CVE-2023-38963 .  
+ex:HPBladeServer ex:hasVulnerability ex:CVE-2022-23943 .  
+ex:PaymentGatewaySDK ex:hasVulnerability ex:CVE-2022-0778 .  
+ex:CiscoSwitch ex:hasVulnerability ex:CVE-2023-20065 .  
+ex:AzureCloud ex:hasVulnerability ex:CVE-2022-26809 .  
+  
+# --- Institutions ---  
+ex:JPMorganChase rdf:type fibo-fbc-fct-fse:InvestmentBank , fibo-be-le-lei:LegalEntity ;  
+    foaf:name "J.P. Morgan Chase & Co." ;  
+    ex:hasBusinessCapability ex:EquityTrading , ex:RiskManagement , ex:Payments ;  
+    fibo-fnd-org-org:hasMember ex:EquityTradePlatform , ex:RiskEngine , ex:PaymentProcessingSystem .  
+  
+ex:BlackRock rdf:type fibo-fbc-fct-fse:InvestmentCompany , fibo-be-le-lei:LegalEntity ;  
+    foaf:name "BlackRock, Inc." ;  
+    ex:hasBusinessCapability ex:EquityTrading , ex:PortfolioManagement ;  
+    fibo-fnd-org-org:hasMember ex:EquityTradePlatform , ex:PortfolioManagementApp .  
+  
+ex:BrownBrothersHarriman rdf:type fibo-fbc-fct-fse:InvestmentBank , fibo-be-le-lei:LegalEntity ;  
+    foaf:name "Brown Brothers Harriman & Co." ;  
+    ex:hasBusinessCapability ex:CustodyServices , ex:Payments ;  
+    fibo-fnd-org-org:hasMember ex:PaymentProcessingSystem , ex:PortfolioManagementApp .  
+  
+################################################################  
+# --- EXTENDED NEW ENTRIES (6) ---  
+################################################################  
+  
+# New Infrastructure  
+ex:IBMZMainframe rdf:type ex:InfrastructureHardware ;  
+    rdfs:label "IBM Z Series Mainframe" ;  
+    ex:hasCPE "cpe:2.3:o:ibm:z15_firmware" .  
+  
+ex:OracleExadata rdf:type ex:InfrastructureHardware ;  
+    rdfs:label "Oracle Exadata Database Machine" ;  
+    ex:hasCPE "cpe:2.3:o:oracle:exadata_firmware" .  
+  
+# New Libraries  
+ex:ChartingLib rdf:type ex:Library ;  
+    dct:title "Financial Charting Library" ;  
+    ex:hasCPE "cpe:2.3:a:highcharts:highcharts:9.3.0" .  
+  
+ex:DataIngestionSDK rdf:type ex:Library ;  
+    dct:title "Market Data Ingestion SDK" ;  
+    ex:hasCPE "cpe:2.3:a:kafka:apache_kafka:2.8.0" .  
+  
+# New Applications  
+ex:RegulatoryReportingSystem rdf:type ex:Application ;  
+    dct:title "Regulatory Reporting System" ;  
+    ex:dependsOn ex:ChartingLib ;  
+    ex:runsOn ex:IBMZMainframe .  
+  
+ex:RealTimeRiskMonitor rdf:type ex:Application ;  
+    dct:title "Real-Time Risk Monitor" ;  
+    ex:dependsOn ex:DataIngestionSDK ;  
+    ex:runsOn ex:OracleExadata .  
+  
+# New Vulnerabilities  
+ex:CVE-2023-55555 rdf:type ex:Vulnerability ;  
+    ex:cveId "CVE-2023-55555" ;  
+    ex:cpe23Uri "cpe:2.3:o:ibm:z15_firmware" ;  
+    ex:cvssScore "8.8" ;  
+    ex:cvssSeverity "High" ;  
+    ex:publishedDate "2023-09-10T00:00:00Z" ;  
+    ex:lastModifiedDate "2023-09-20T00:00:00Z" ;  
+    dct:description "IBM Z15 firmware security bypass vulnerability." .  
+  
+ex:CVE-2022-66666 rdf:type ex:Vulnerability ;  
+    ex:cveId "CVE-2022-66666" ;  
+    ex:cpe23Uri "cpe:2.3:o:oracle:exadata_firmware" ;  
+    ex:cvssScore "9.4" ;  
+    ex:cvssSeverity "Critical" ;  
+    ex:publishedDate "2022-11-05T00:00:00Z" ;  
+    ex:lastModifiedDate "2022-11-20T00:00:00Z" ;  
+    dct:description "Oracle Exadata firmware remote code execution vulnerability." .  
+  
+ex:CVE-2021-77777 rdf:type ex:Vulnerability ;  
+    ex:cveId "CVE-2021-77777" ;  
+    ex:cpe23Uri "cpe:2.3:a:highcharts:highcharts:9.3.0" ;  
+    ex:cvssScore "6.7" ;  
+    ex:cvssSeverity "Medium" ;  
+    ex:publishedDate "2021-08-12T00:00:00Z" ;  
+    ex:lastModifiedDate "2021-09-01T00:00:00Z" ;  
+    dct:description "Highcharts XSS vulnerability in tooltip rendering." .  
+  
+ex:CVE-2020-88888 rdf:type ex:Vulnerability ;  
+    ex:cveId "CVE-2020-88888" ;  
+    ex:cpe23Uri "cpe:2.3:a:kafka:apache_kafka:2.8.0" ;  
+    ex:cvssScore "7.5" ;  
+    ex:cvssSeverity "High" ;  
+    ex:publishedDate "2020-12-15T00:00:00Z" ;  
+    ex:lastModifiedDate "2021-01-10T00:00:00Z" ;  
+    dct:description "Apache Kafka privilege escalation vulnerability." .  
+  
+# Linking new vulnerabilities  
+ex:IBMZMainframe ex:hasVulnerability ex:CVE-2023-55555 .  
+ex:OracleExadata ex:hasVulnerability ex:CVE-2022-66666 .  
+ex:ChartingLib ex:hasVulnerability ex:CVE-2021-77777 .  
+ex:DataIngestionSDK ex:hasVulnerability ex:CVE-2020-88888 .  
+  
+# Assigning new applications to existing orgs  
+ex:JPMorganChase fibo-fnd-org-org:hasMember ex:RegulatoryReportingSystem .  
+ex:BlackRock fibo-fnd-org-org:hasMember ex:RealTimeRiskMonitor .  
+ex:BrownBrothersHarriman fibo-fnd-org-org:hasMember ex:RegulatoryReportingSystem .  
